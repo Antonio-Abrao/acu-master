@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>TCC</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #000;
+				color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+
+	<body id="acu">
+		<script src="three/build/three.js"></script>
+		<!-- CARREGA O THREE.JS -->
+		<script src="three/loaders/OBJLoader.js"></script>
+		<!-- CARREGA O CARREGADOR DE OBJETO -->
+		<script src="three/controls/OrbitControls.js"></script>
+		<!-- CARREGA OS CONTROLES -> ORBIT CONTROLS -->
+		<script>
+			var container;
+			// variavel comum declarada
+			var camera, scene, raycaster, renderer;
+			// variaveis comuns declaradas
+			var mouse = new THREE.Vector2(), INTERSECTED;
+			// variavel mouse declarada, e referenciada a partir do construtor Vector2 (vetor bidimensional)
+
+			var mouseX = 0, mouseY = 0;
+			// variaveis comuns declaradas
+
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+
+			var acuX = 0, acuY = 0, acuZ = 0; acuXF = 0, acuYF = 0, acuZF = 0;
+			//inicialização de variaveis globais a serem usadas para a animação de camera
+
+			var focoCamera = false;
+			//variavel global que controlará a animação de câmera (ativar/desativar animação)
+
+			var p = new THREE.Vector3( 0, 0, 0 );
+			/*variavel p declarada, e referenciada a partir do construtor Vector3 (vetor tridimensional), inicializada em 0,0,0*/
+			var obj = null;
+			var obj_aux = null;
+			/* INICIO LISTENERS VASO CONCEPÇÃO */
+
+			vc2 = parent.document.getElementById('vc2');
+            /* o objeto DOCUMENT trabalha com os Nós html, esse escopo de trabalho é chamado de DOM (Document Object Model)
+               onde o document em si, é a RAIZ da árvore ( ou seja, todo o conteúdo HTML da página )
+               fazendo parent.document estamos acessando todos os NÓS HTML da página PAI.
+
+               Por quê página PAI ? Pois esta página aqui em questão, é chamada pela página acumaster.html, onde está a barra lateral contendo a lista de pontos. E é na página PAI que está o botão que queremos verificar o clique do mouse.
+	            fazendo vc2 = parent.document.getElementById('vc2') estamos SELECIONANDO um elemento HTML cujo id="vc2" e ARMAZENANDO na variável vc2.
+
+	            A seleção é feita utilizando o método getElementById(id), implementada nativamente no objeto DOCUMENT. Este método procura no conteúdo DOM, o elemento que possui o id com o parâmetro informado, no caso, vc2.
+
+	            Obs.: O elemento selecionado especificadamente é
+	            			    <a href="javascript:;" id="vc15"> * Perceba a flag id="vc2", por isso conseguimos buscá-lo.
+				      				<i class="icon-cogs"></i> 
+				      				<span class="title">VC 15</span>          
+				      				<span class="arrow "></span>
+				      			</a>
+				      			   --> Linha 26 da página acumaster.
+			*/
+			vc2.onclick=function() {
+				acuPonto('vc2');
+			}
+			/* Tendo o botão cujo id="vc15" armazenado na variavel vc15 podemos acessar a função
+			onclick, que funciona como uma escuta para o elemento - quando ele é clicado, é chamada a FUNÇÃO
+			acuPonto(x, y, z) -- que recebe como parâmetro as coordenadas do espaço tridimensional. A função acuPonto será explicada mais abaixo, quando ela é declarada. Os restantes são análogos.
+			*/
+			vc3 = parent.document.getElementById('vc3');
+			vc3.onclick=function() {
+				acuPonto('vc3');
+			}
+			vc4 = parent.document.getElementById('vc4');
+			vc4.onclick=function() {
+				acuPonto('vc4');
+			}
+			vc5 = parent.document.getElementById('vc5');
+			vc5.onclick=function() {
+				acuPonto('vc5');
+			}
+			vc6 = parent.document.getElementById('vc6');
+			vc6.onclick=function() {
+				acuPonto('vc6');
+			}
+			vc7 = parent.document.getElementById('vc7');
+			vc7.onclick=function() {
+				acuPonto('vc7');
+			}
+			vc8 = parent.document.getElementById('vc8');
+			vc8.onclick=function() {
+				acuPonto('vc8');
+			}
+			vc9 = parent.document.getElementById('vc9');
+			vc9.onclick=function() {
+				acuPonto('vc9');
+			}
+			vc10 = parent.document.getElementById('vc10');
+			vc10.onclick=function() {
+				acuPonto('vc10');
+			}
+			vc11 = parent.document.getElementById('vc11');
+			vc11.onclick=function() {
+				acuPonto('vc11');
+			}
+			vc12 = parent.document.getElementById('vc12');
+			vc12.onclick=function() {
+				acuPonto('vc12');
+			}
+			vc13 = parent.document.getElementById('vc13');
+			vc13.onclick=function() {
+				acuPonto('vc13');
+			}
+			vc14 = parent.document.getElementById('vc14');
+			vc14.onclick=function() {
+				acuPonto('vc14');
+			}
+			vc15 = parent.document.getElementById('vc15');
+			vc15.onclick=function() {
+				acuPonto('vc15');
+			}
+			vc16 = parent.document.getElementById('vc16');
+			vc16.onclick=function() {
+				acuPonto('vc16');
+			}
+			vc17 = parent.document.getElementById('vc17');
+			vc17.onclick=function() {
+				acuPonto('vc17');
+			}
+			vc18 = parent.document.getElementById('vc18');
+			vc18.onclick=function() {
+				acuPonto('vc18');
+			}
+			vc19 = parent.document.getElementById('vc19');
+			vc19.onclick=function() {
+				acuPonto('vc19');
+			}
+			vc20 = parent.document.getElementById('vc20');
+			vc20.onclick=function() {
+				acuPonto('vc20');
+			}
+			vc21 = parent.document.getElementById('vc21');
+			vc21.onclick=function() {
+				acuPonto('vc21');
+			}
+			vc22 = parent.document.getElementById('vc22');
+			vc22.onclick=function() {
+				acuPonto('vc22');
+			}
+			vc23 = parent.document.getElementById('vc23');
+			vc23.onclick=function() {
+				acuPonto('vc23');
+			}
+			vc24 = parent.document.getElementById('vc24');
+			vc24.onclick=function() {
+				acuPonto('vc24');
+			}
+
+			/* FIM LISTENERS VASO CONCEPÇÃO */
+
+			/* INICIO LISTENERS PULMÃO */
+
+			p1 = parent.document.getElementById('p1');
+			p1.onclick=function() {
+				acuPonto('p1');
+			}
+			p2 = parent.document.getElementById('p2');
+			p2.onclick=function() {
+				acuPonto('p2');
+			}
+			p3 = parent.document.getElementById('p3');
+			p3.onclick=function() {
+				acuPonto('p3');
+			}
+			p4 = parent.document.getElementById('p4');
+			p4.onclick=function() {
+				acuPonto('p4');
+			}
+			p5 = parent.document.getElementById('p5');
+			p5.onclick=function() {
+				acuPonto('p5');
+			}
+			p6 = parent.document.getElementById('p6');
+			p6.onclick=function() {
+				acuPonto('p6');
+			}
+			p7 = parent.document.getElementById('p7');
+			p7.onclick=function() {
+				acuPonto('p7');
+			}
+			p8 = parent.document.getElementById('p8');
+			p8.onclick=function() {
+				acuPonto('p8');
+			}
+			p9 = parent.document.getElementById('p9');
+			p9.onclick=function() {
+				acuPonto('p9');
+			}
+			p10 = parent.document.getElementById('p10');
+			p10.onclick=function() {
+				acuPonto('p10');
+			}
+			p11 = parent.document.getElementById('p11');
+			p11.onclick=function() {
+				acuPonto('p11');
+			}
+
+			/* FIM LISTENERS PULMÃO */
+
+			/* INICIO LISTENERS INTESTINO GROSSO */
+
+			ig1 = parent.document.getElementById('ig1');
+			ig1.onclick=function() {
+				acuPonto('ig1');
+			}
+			ig2 = parent.document.getElementById('ig2');
+			ig2.onclick=function() {
+				acuPonto('ig2');
+			}
+			ig3 = parent.document.getElementById('ig3');
+			ig3.onclick=function() {
+				acuPonto('ig3');
+			}
+			ig4 = parent.document.getElementById('ig4');
+			ig4.onclick=function() {
+				acuPonto('ig4');
+			}
+			ig5 = parent.document.getElementById('ig5');
+			ig5.onclick=function() {
+				acuPonto('ig5');
+			}
+			ig6 = parent.document.getElementById('ig6');
+			ig6.onclick=function() {
+				acuPonto('ig6');
+			}
+			ig7 = parent.document.getElementById('ig7');
+			ig7.onclick=function() {
+				acuPonto('ig7');
+			}
+			ig8 = parent.document.getElementById('ig8');
+			ig8.onclick=function() {
+				acuPonto('ig8');
+			}
+			ig9 = parent.document.getElementById('ig9');
+			ig9.onclick=function() {
+				acuPonto('ig9');
+			}
+			ig10 = parent.document.getElementById('ig10');
+			ig10.onclick=function() {
+				acuPonto('ig10');
+			}
+			ig11 = parent.document.getElementById('ig11');
+			ig11.onclick=function() {
+				acuPonto('ig11');
+			}
+			ig12 = parent.document.getElementById('ig12');
+			ig12.onclick=function() {
+				acuPonto('ig12');
+			}
+			ig13 = parent.document.getElementById('ig13');
+			ig13.onclick=function() {
+				acuPonto('ig13');
+			}
+			ig14 = parent.document.getElementById('ig14');
+			ig14.onclick=function() {
+				acuPonto('ig14');
+			}
+			ig15 = parent.document.getElementById('ig15');
+			ig15.onclick=function() {
+				acuPonto('ig15');
+			}
+			ig16 = parent.document.getElementById('ig16');
+			ig16.onclick=function() {
+				acuPonto('ig16');
+			}
+			ig17 = parent.document.getElementById('ig17');
+			ig17.onclick=function() {
+				acuPonto('ig17');
+			}
+			ig18 = parent.document.getElementById('ig18');
+			ig18.onclick=function() {
+				acuPonto('ig18');
+			}
+			ig19 = parent.document.getElementById('ig19');
+			ig19.onclick=function() {
+				acuPonto('ig19');
+			}
+			ig20 = parent.document.getElementById('ig20');
+			ig20.onclick=function() {
+				acuPonto('ig20');
+			}
+
+			/* FIM LISTENERS PULMÃO */
+
+			/* INICIO LISTENERS ESTOMAGO */
+			e1 = parent.document.getElementById('e1');
+			e1.onclick=function() {
+				acuPonto('e1');
+			}
+			e2 = parent.document.getElementById('e2');
+			e2.onclick=function() {
+				acuPonto('e2');
+			}
+			e3 = parent.document.getElementById('e3');
+			e3.onclick=function() {
+				acuPonto('e3');
+			}
+			e4 = parent.document.getElementById('e4');
+			e4.onclick=function() {
+				acuPonto('e4');
+			}
+			e5 = parent.document.getElementById('e5');
+			e5.onclick=function() {
+				acuPonto('e5');
+			}
+			e6 = parent.document.getElementById('e6');
+			e6.onclick=function() {
+				acuPonto('e6');
+			}
+			e7 = parent.document.getElementById('e7');
+			e7.onclick=function() {
+				acuPonto('e7');
+			}
+			e8 = parent.document.getElementById('e8');
+			e8.onclick=function() {
+				acuPonto('e8');
+			}
+			e9 = parent.document.getElementById('e9');
+			e9.onclick=function() {
+				acuPonto('e9');
+			}
+			e10 = parent.document.getElementById('e10');
+			e10.onclick=function() {
+				acuPonto('e10');
+			}
+			e11 = parent.document.getElementById('e11');
+			e11.onclick=function() {
+				acuPonto('e11');
+			}
+			e12 = parent.document.getElementById('e12');
+			e12.onclick=function() {
+				acuPonto('e12');
+			}
+			e13 = parent.document.getElementById('e13');
+			e13.onclick=function() {
+				acuPonto('e13');
+			}
+			e14 = parent.document.getElementById('e14');
+			e14.onclick=function() {
+				acuPonto('e14');
+			}
+			e15 = parent.document.getElementById('e15');
+			e15.onclick=function() {
+				acuPonto('e15');
+			}
+			e16 = parent.document.getElementById('e16');
+			e16.onclick=function() {
+				acuPonto('e16');
+			}
+			e17 = parent.document.getElementById('e17');
+			e17.onclick=function() {
+				acuPonto('e17');
+			}
+			e18 = parent.document.getElementById('e18');
+			e18.onclick=function() {
+				acuPonto('e18');
+			}
+			e19 = parent.document.getElementById('e19');
+			e19.onclick=function() {
+				acuPonto('e19');
+			}
+			e20 = parent.document.getElementById('e20');
+			e20.onclick=function() {
+				acuPonto('e20');
+			}
+			e21 = parent.document.getElementById('e21');
+			e21.onclick=function() {
+				acuPonto('e21');
+			}
+			e22 = parent.document.getElementById('e22');
+			e22.onclick=function() {
+				acuPonto('e22');
+			}
+			e23 = parent.document.getElementById('e23');
+			e23.onclick=function() {
+				acuPonto('e23');
+			}
+			e24 = parent.document.getElementById('e24');
+			e24.onclick=function() {
+				acuPonto('e24');
+			}
+			e25 = parent.document.getElementById('e25');
+			e25.onclick=function() {
+				acuPonto('e25');
+			}
+
+			e26 = parent.document.getElementById('e26');
+			e26.onclick=function() {
+				acuPonto('e26');
+			}
+			e27 = parent.document.getElementById('e27');
+			e27.onclick=function() {
+				acuPonto('e27');
+			}
+			e28 = parent.document.getElementById('e28');
+			e28.onclick=function() {
+				acuPonto('e28');
+			}
+			e29 = parent.document.getElementById('e29');
+			e29.onclick=function() {
+				acuPonto('e29');
+			}
+			e30 = parent.document.getElementById('e30');
+			e30.onclick=function() {
+				acuPonto('e30');
+			}
+			e31 = parent.document.getElementById('e31');
+			e31.onclick=function() {
+				acuPonto('e31');
+			}
+			e32 = parent.document.getElementById('e32');
+			e32.onclick=function() {
+				acuPonto('e32');
+			}
+			e33 = parent.document.getElementById('e33');
+			e33.onclick=function() {
+				acuPonto('e33');
+			}
+			e34 = parent.document.getElementById('e34');
+			e34.onclick=function() {
+				acuPonto('e34');
+			}
+			e35 = parent.document.getElementById('e35');
+			e35.onclick=function() {
+				acuPonto('e35');
+			}
+			e36 = parent.document.getElementById('e36');
+			e36.onclick=function() {
+				acuPonto('e36');
+			}
+			e37 = parent.document.getElementById('e37');
+			e37.onclick=function() {
+				acuPonto('e37');
+			}
+			e38 = parent.document.getElementById('e38');
+			e38.onclick=function() {
+				acuPonto('e38');
+			}
+			e39 = parent.document.getElementById('e39');
+			e39.onclick=function() {
+				acuPonto('e39');
+			}
+			e40 = parent.document.getElementById('e40');
+			e40.onclick=function() {
+				acuPonto('e40');
+			}
+			e41 = parent.document.getElementById('e41');
+			e41.onclick=function() {
+				acuPonto('e41');
+			}
+			e42 = parent.document.getElementById('e42');
+			e42.onclick=function() {
+				acuPonto('e42');
+			}
+			e43 = parent.document.getElementById('e43');
+			e43.onclick=function() {
+				acuPonto('e43');
+			}
+			e44 = parent.document.getElementById('e44');
+			e44.onclick=function() {
+				acuPonto('e44');
+			}
+			e45 = parent.document.getElementById('e45');
+			e45.onclick=function() {
+				acuPonto('e45');
+			}
+
+			/* FIM LISTENERS ESTOMAGO */
+
+			// ponto avulso
+			cs7 = parent.document.getElementById('cs7');
+			cs7.onclick=function() {
+				acuPonto('cs7');
+			}
+
+			init();
+			/* aqui é chamada a função init(); o fluxo de execução do código entra nesta função assim que ela é chamada, seguindo todas as instruções contidas em init(); e ao término, volta para este ponto e segue com a execução do comando na linha 87 */
+			animate();
+			/* aqui é chamada a função animate(), que é propriamente acessada logo após o controle de execução passar por toda a função init() que foi chamada anteriormente. Ao explicar a função animate, perceberá que ela é uma função recursiva. Quando essa função é chamada, o fluxo de execução não sai mais dela, uma vez que ela chama a si própria indefinidamente */
+
+			function init() {
+				/* declaração da função init() => o propósito dela é exatamente como o próprio nome diz, inicialização. */
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+				/* anexa ao corpo BODY do HTML o container, que neste caso é um elemento DIV */
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.5, 2000 );
+				/* declara uma câmera, do tipo PerspectiveCamera.*/
+				camera.position.z = 250;
+				/* posiciona a câmera inicialmente 250 pixeis a frente do centro (0) */
+				controls = new THREE.OrbitControls( camera );
+				/* declara os controles em função da câmera do tipo OrbitControls. Permite o uso de controles em volta de um objeto, segurando o botao direito do mouse faz a camera girar em função da câmera, girando o scroll faz aumentar/diminuir o eixo Z da câmera (zoom), segurando o botao esquerdo faz a posição como um todo da camera deslocar-se. Não possui documentação. */
+				controls.damping = 0.2;
+				controls.addEventListener( 'change', render );
+
+				scene = new THREE.Scene();
+				/* cria um novo objeto do tipo CENA, que permitirá o meio por onde a renderização será feita. Como também será onde adicionaremos objetos, luzes e câmeras.
+				Vide https://threejs.org/docs/?q=scene#Reference/Scenes/Scene
+				*/
+
+				var ambient = new THREE.AmbientLight( 0x101030 );
+				/* Cria uma luz ambiente de cor 0x101030, afetando globalmente os objetos na cena. Como se fosse o Sol.
+				Esse construtor recebe 2 parâmetros: cor RGB (no caso 0x101030) e INTENSIDADE (que no caso foi omitida [o que faz o programa usar a definição padrão de intensidade]) Vide documentação do Three.js para mais informações. https://threejs.org/docs/?q=ambient#Reference/Lights/AmbientLight
+				*/
+				scene.add( ambient );
+				/* Invoca o método add do objeto scene que foi construído na linha 104, passando como parâmetro a variável ambient ( que recebeu a construção do método THREE.AmbientLight) - linha 107
+
+				Resumo: adiciona a luz ambiente na cena.
+				*/
+
+
+				var directionalLight = new THREE.DirectionalLight( 0xffeedd );
+				/* Armazena o resultado do construtor DirectionalLight na variavel directionalLight
+				é passado como parâmetro a cor RGB 0xffeedd.
+				Este construtor cria uma luz em modo direcional, como se fosse uma lâmpada.
+				Vide https://threejs.org/docs/?q=directional#Reference/Lights/DirectionalLight*/
+				directionalLight.position.set( 0, 0, 1 );
+				/* acessando o objeto position e invocando o método set estamos definindo a posição da luz, que neste caso é (0, 0, 1) ou seja: uma lâmpada paralela ao eixo Z, emitindo a luz de frente. */
+				scene.add( directionalLight );
+
+				/* Invoca o método add do objeto scene que foi construído na linha 104, passando como parâmetro a variável directionalLight ( que recebeu a construção do método THREE.DirectionalLight) - linha 107
+
+				Resumo: adiciona a luz direcional na cena.
+				*/
+
+				var directionalLight = new THREE.DirectionalLight( 0xffeedd );
+				directionalLight.position.set( 0, 0, -1 );
+				/* Mesma coisa como na parte acima. A única diferença é que neste caso a direção da luz é (0, 0, -1) ou seja: uma lâmpada paralela ao eixo Z, porém inversa, emitindo a luz de trás. */
+				scene.add( directionalLight );
+				/* mesma coisa que em cima, adiciona a luz direcional na cena*/
+
+				var geometry = new THREE.SphereGeometry( 0.3, 32, 32 );
+				/* armazena em geometry o resultado do construtor SphereGeometry, que recebe como parâmetro 
+
+				raio — raio da esfera. Neste caso 0.3.
+				widthSegments — número de segmentos horizontais isso influencia na lapidação da esfera. Neste caso 32.
+				heightSegments — número de segmentos verticais isso influencia na lapidação da esfera. Neste caso 32.
+
+				Geometria que será usada para todas as esferas no programa - ACUPONTOS 
+
+				*/
+
+				/*Aqui estão as declarações de todas as esferas, elas são análogas, a diferença será apenas os nomes e posicionamentos: */
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+				/* vide https://threejs.org/docs/#Reference/Objects/Mesh */
+
+				object.name = 'cs7';
+				/* cria um atributo nome, que será usado para mapear os botões na página pai. Para abrir a opção quando clica na esfera que é representada no espaço tridimensional */
+				object.position.x = -24.71516683000315;
+				object.position.y = -6.555406638283143;
+				object.position.z = 0.6;
+				/*posições no espaço - definidas basicamente por testes exaustivos e comparação com o referencial*/
+				scene.add( object );
+				/* adiciona o acuponto */
+
+				/*abaixo estão declaradas as outras esferas da mesma forma, mudando apenas posicionamento e nomes*/
+
+				var geometry = new THREE.SphereGeometry( 0.3, 32, 32 );
+
+				/* INÍCIO MERIDIANO EXTRAORDINÁRIO - VASO CONCEPÇÃO */
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc2';
+				object.position.x = 0.05;
+				object.position.y = -6;
+				object.position.z = 6.4;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc3';
+				object.position.x = 0.05;
+				object.position.y = -2.9;
+				object.position.z = 7.1;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc4';
+				object.position.x = 0.05;
+				object.position.y = 0.20000000000000018;
+				object.position.z = 7.17;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc5';
+				object.position.x = 0.05;
+				object.position.y = 3.3000000000000007;
+				object.position.z = 7.25;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc6';
+				object.position.x = 0.05;
+				object.position.y = 6.4;
+				object.position.z = 7.3;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc7';
+				object.position.x = 0.05;
+				object.position.y = 9.5;
+				object.position.z = 7.2;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc8';
+				object.position.x = 0.05;
+				object.position.y = 12.7;
+				object.position.z = 6.1;
+
+				scene.add( object );
+				
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc9';
+				object.position.x = 0.05;
+				object.position.y = 15.9;
+				object.position.z = 6.1;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc10';
+				object.position.x = 0.05;
+				object.position.y = 18.4;
+				object.position.z = 6.38;
+
+				scene.add( object );
+				
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc11';
+				object.position.x = 0.05;
+				object.position.y = 20.9;
+				object.position.z = 6.38;
+
+				scene.add( object );
+				
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc12';
+				object.position.x = 0.05;
+				object.position.y = 23.4;
+				object.position.z = 6.58;
+
+				scene.add( object );
+				
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc13';
+				object.position.x = 0.05;
+				object.position.y = 25.9;
+				object.position.z = 6.6;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc14';
+				object.position.x = 0.05;
+				object.position.y = 28.4;
+				object.position.z = 5.95;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc15';
+				object.name = 'vc15';
+				object.position.x = 0.05;
+				object.position.y = 30.9;
+				object.position.z = 5.06;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc16';
+				object.position.x = 0.05;
+				object.position.y = 33.4;
+				object.position.z = 4.9;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc17';
+				object.position.x = 0.05;
+				object.position.y = 36;
+				object.position.z = 4.7;
+				console.log(object.position.y);
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc18';
+				object.position.x = 0.05;
+				object.position.y = 38.6;
+				object.position.z = 3.6;
+				console.log(object.position.y);
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc19';
+				object.position.x = 0.05;
+				object.position.y = 41.2;
+				object.position.z = 2.4;
+				console.log(object.position.y);
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc20';
+				object.position.x = 0.05;
+				object.position.y = 43.8;
+				object.position.z = 1.2;
+				console.log(object.position.y);
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc21';
+				object.position.x = 0.05;
+				object.position.y = 46.4;
+				object.position.z = -0.9;
+				console.log(object.position.y);
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc22';
+				object.position.x = 0.05;
+				object.position.y = 49;
+				object.position.z = -2.1;
+				console.log(object.position.y);
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc23';
+				object.position.x = 0.02;
+				object.position.y = 56;
+				object.position.z = -0.2;
+				console.log(object.position.y);
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xa742f4 } ) );
+				object.name = 'vc24';
+				object.position.x = 0.02;
+				object.position.y = 60;
+				object.position.z = 5;
+				console.log(object.position.y);
+
+				scene.add( object );
+				/* FIM MERIDIANO EXTRAORDINÁRIO - VASO CONCEPÇÃO */
+
+				/* INÍCIO MERIDIANO ZANG FU - PULMAO */
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xf4e842 } ) );
+				object.name = 'p1';
+				object.position.x = -13.267798006864483;
+				object.position.y = 46.00000000000004;
+				object.position.z = -1.0999999999999999;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xf4e842 } ) );
+				object.name = 'p2';
+				object.position.x = -11.26779800686449;
+				object.position.y = 48.60000000000008;
+				object.position.z = -3.4000000000000026;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xf4e842 } ) );
+				object.name = 'p3';
+				object.position.x = -22.967798006864573;
+				object.position.y = 32.39999999999985;
+				object.position.z = -4.7;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xf4e842 } ) );
+				object.name = 'p4';
+				object.position.x = -23.56779800686458;
+				object.position.y = 28.699999999999797;
+				object.position.z = -4.999999999999999;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xf4e842 } ) );
+				object.name = 'p5';
+				object.position.x = -24.16779800686459;
+				object.position.y = 15.69999999999962;
+				object.position.z = -4.6000000000000005;
+
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xf4e842 } ) );
+				object.name = 'p6';
+				object.position.x = -25.767798006864613;
+				object.position.y = 7.499999999999648;
+				object.position.z = -2.7000000000000015;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xf4e842 } ) );
+				object.name = 'p7';
+				object.position.x = -26.96779800686463;
+				object.position.y = -1.5000000000003426;
+				object.position.z = -1.5000000000000004;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xf4e842 } ) );
+				object.name = 'p8';
+				object.position.x = -26.26779800686462;
+				object.position.y = -3.500000000000344;
+				object.position.z = -0.5000000000000001;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xf4e842 } ) );
+				object.name = 'p9';
+				object.position.x = -27.367798006864636;
+				object.position.y = -5.500000000000339;
+				object.position.z = -0.30000000000000016;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xf4e842 } ) );
+				object.name = 'p10';
+				object.position.x = -27.66779800686464;
+				object.position.y = -7.7000000000003315;
+				object.position.z = 2.1000000000000005;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xf4e842 } ) );
+				object.name = 'p11';
+				object.position.x = -30.56779800686468;
+				object.position.y = -13.200000000000312;
+				object.position.z = 5.999999999999995;
+				scene.add( object );
+
+				/* FIM MERIDIANO Shou Tai Yin Fei Jing - PULMAO */
+
+				/* INICIO MERIDIANO Shou Yang Ming Da Chang - INTESTINO GROSSO */
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig1';
+				object.view = 1;
+				object.position.x = 29.232201993135632;
+				object.position.y = -20.00000000000036;
+				object.position.z = 6.199999999999994;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig2';
+				object.view = 1;
+				object.position.x = 29.332201993135634;
+				object.position.y = -14.700000000000307;
+				object.position.z = 2.8000000000000007;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig3';
+				object.view = 1;
+				object.position.x = 29.532201993135637;
+				object.position.y = -12.200000000000315;
+				object.position.z = 1.7999999999999998;
+				scene.add( object );
+				
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig4';
+				object.view = -2;
+				object.position.x = 29.532201993135637;
+				object.position.y = -10.500000000000322;
+				object.position.z = 0.39999999999999936;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig5';
+				object.view = 1;
+				object.position.x = 28.33220199313562;
+				object.position.y = -6.800000000000335;
+				object.position.z = 0.39999999999999925;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig6';
+				object.view = 1;
+				object.position.x = 28.032201993135615;
+				object.position.y = -0.3000000000003421;
+				object.position.z = -3.8000000000000025;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig7';
+				object.view = 1;
+				object.position.x = 27.832201993135612;
+				object.position.y = 4.399999999999659;
+				object.position.z = -6.399999999999994;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig8';
+				object.view = 1;
+				object.position.x = 27.73220199313561;
+				object.position.y = 9.69999999999964;
+				object.position.z = -8.099999999999989;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig9';
+				object.view = 1;
+				object.position.x = 27.532201993135608;
+				object.position.y = 11.999999999999632;
+				object.position.z = -8.799999999999986;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig10';
+				object.view = 1;
+				object.position.x = 27.232201993135604;
+				object.position.y = 14.299999999999624;
+				object.position.z = -9.299999999999985;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig11';
+				object.view = 1;
+				object.position.x = 27.0322019931356;
+				object.position.y = 17.59999999999964;
+				object.position.z = -8.799999999999986;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig12';
+				object.view = 1;
+				object.position.x = 26.632201993135595;
+				object.position.y = 20.49999999999968;
+				object.position.z = -8.599999999999987;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig13';
+				object.view = 1;
+				object.position.x = 26.432201993135592;
+				object.position.y = 23.499999999999723;
+				object.position.z = -9.299999999999985;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig14';
+				object.view = 1;
+				object.position.x = 24.73220199313557;
+				object.position.y = 33.29999999999986;
+				object.position.z = -7.599999999999991;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig15';
+				object.view = 1;
+				object.position.x = 20.432201993135507;
+				object.position.y = 47.20000000000006;
+				object.position.z = -5;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig16';
+				object.view = 1;
+				object.position.x = 18.132201993135475;
+				object.position.y = 48.80000000000008;
+				object.position.z = -6.499999999999995;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig17';
+				object.position.x = 5.532201993135482;
+				object.position.y = 54.10000000000016;
+				object.position.z = -4.0000000000000036;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig18';
+				object.position.x = 5.132201993135483;
+				object.position.y = 56.100000000000186;
+				object.position.z = -3.600000000000003;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig19';
+				object.position.x = 0.9322019931354847;
+				object.position.y = 62.400000000000276;
+				object.position.z = 4.899999999999998;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x77f442 } ) );
+				object.name = 'ig20';
+				object.position.x = 1.9322019931354855;
+				object.position.y = 62.90000000000028;
+				object.position.z = 4.3;
+				scene.add( object );
+
+				/* FIM MERIDIANO Shou Yang Ming Da Chang - INTESTINO GROSSO */
+
+				/* INICIO MERIDIANO Estômago (Wei) - Zu Yang Ming Wei Jing */
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e1';
+				object.position.x = -2.9677980068645167;
+				object.position.y = 66.70000000000014;
+				object.position.z = 3;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e2';
+				object.position.x = -2.9677980068645167;
+				object.position.y = 66.00000000000018;
+				object.position.z = 3.2;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e3';
+				object.position.x = -2.8677980068645166;
+				object.position.y = 63.700000000000294;
+				object.position.z = 3.8000000000000007;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e4';
+				object.position.x = -2.7677980068645165;
+				object.position.y = 61.10000000000026;
+				object.position.z = 4.1000000000000005;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e5';
+				object.view = -1;
+				object.position.x = -3.367798006864517;
+				object.position.y = 58.200000000000216;
+				object.position.z = 2.4999999999999996;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e6';
+				object.view = -1;
+				object.position.x = -5.967798006864511;
+				object.position.y = 61.30000000000026;
+				object.position.z = -2.6000000000000028;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e7';
+				object.view = -1;
+				object.position.x = -6.467798006864509;
+				object.position.y = 64.20000000000029;
+				object.position.z = -2.700000000000003;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e8';
+				object.view = -1;
+				object.position.x = -6.26779800686451;
+				object.position.y = 71.89999999999985;
+				object.position.z = -2.700000000000003;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e9';
+				object.position.x = -2.9677980068645167;
+				object.position.y = 54.20000000000016;
+				object.position.z = -2.3000000000000025;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e10';
+				object.position.x = -2.267798006864516;
+				object.position.y = 51.40000000000012;
+				object.position.z = -2.2000000000000024;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e11';
+				object.position.x = -2.9677980068645167;
+				object.position.y = 47.600000000000065;
+				object.position.z = -1.2000000000000015;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e12';
+				object.position.x = -6.667798006864508;
+				object.position.y = 48.60000000000008;
+				object.position.z = -2.2000000000000024;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e13';
+				object.position.x = -7.067798006864507;
+				object.position.y = 47.600000000000065;
+				object.position.z = -1.0000000000000013;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e14';
+				object.position.x = -7.667798006864505;
+				object.position.y = 44.800000000000026;
+				object.position.z = 0.8999999999999986;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e15';
+				object.position.x = -8.767798006864501;
+				object.position.y = 42.29999999999999;
+				object.position.z = 2.3999999999999995;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e16';
+				object.position.x = -9.867798006864497;
+				object.position.y = 38.89999999999994;
+				object.position.z = 4.2;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e17';
+				object.position.x = -12.06779800686449;
+				object.position.y = 33.19999999999986;
+				object.position.z = 4.999999999999997;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e18';
+				object.position.x = -12.06779800686449;
+				object.position.y = 30.199999999999818;
+				object.position.z = 2.1999999999999993;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e19';
+				object.position.x = -3.167798006864517;
+				object.position.y = 25.699999999999754;
+				object.position.z = 6.599999999999992;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e20';
+				object.position.x = -3.167798006864517;
+				object.position.y = 22.64727272727248;
+				object.position.z = 6.699999999999991;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e21';
+				object.position.x = -3.167798006864517;
+				object.position.y = 19.59454545454521;
+				object.position.z = 6.699999999999991;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e22';
+				object.position.x = -3.167798006864517;
+				object.position.y = 16.541818181817938;
+				object.position.z = 6.499999999999992;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e23';
+				object.position.x = -3.167798006864517;
+				object.position.y = 13.489090909090663;
+				object.position.z = 6.699999999999991;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e24';
+				object.position.x = -3.167798006864517;
+				object.position.y = 10.43636363636339;
+				object.position.z = 7.09999999999999;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e25';
+				object.position.x = -3.167798006864517;
+				object.position.y = 7.383636363636118;
+				object.position.z = 6.99999999999999;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e26';
+				object.position.x = -3.167798006864517;
+				object.position.y = 4.330909090908847;
+				object.position.z = 6.899999999999991;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e27';
+				object.position.x = -3.167798006864517;
+				object.position.y = 1.2781818181815723;
+				object.position.z = 6.599999999999992;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e28';
+				object.position.x = -3.167798006864517;
+				object.position.y = -1.7745454545457022;
+				object.position.z = 6.299999999999993;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e29';
+				object.position.x = -3.167798006864517;
+				object.position.y = -4.827272727272973;
+				object.position.z = 5.699999999999995;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e30';
+				object.position.x = -3.167798006864517;
+				object.position.y = -7.880000000000244;
+				object.position.z = 4.599999999999999;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e31';
+				object.position.x = -12.467798006864488;
+				object.position.y = -11.280000000000232;
+				object.position.z = 4.100000000000001;
+				scene.add( object );
+
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e32';
+				object.position.x = -12.467798006864488;
+				object.position.y = -28.48000000000039;
+				object.position.z = 4.300000000000001;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e33';
+				object.position.x = -12.467798006864488;
+				object.position.y = -36.2800000000005;
+				object.position.z = 2.900000000000001;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e34';
+				object.position.x = -12.467798006864488;
+				object.position.y = -38.98000000000054;
+				object.position.z = 2.3000000000000003;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e35';
+				object.position.x = -12.467798006864488;
+				object.position.y = -47.18000000000065;
+				object.position.z = 1.4999999999999996;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e36';
+				object.position.x = -12.467798006864488;
+				object.position.y = -53.18000000000074;
+				object.position.z = -0.10000000000000153;
+				scene.add( object );
+
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e37';
+				object.position.x = -12.467798006864488;
+				object.position.y = -63.68000000000089;
+				object.position.z = -0.7000000000000015;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e38';
+				object.position.x = -11.76779800686449;
+				object.position.y = -69.78000000000057;
+				object.position.z = -1.6000000000000019;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e39';
+				object.position.x = -11.367798006864492;
+				object.position.y = -73.28000000000037;
+				object.position.z = -1.9000000000000021;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e40';
+				object.view = -1;
+				object.position.x = -13.467798006864484;
+				object.position.y = -69.48000000000059;
+				object.position.z = -4.3000000000000025;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e41';
+				object.position.x = -8.667798006864501;
+				object.position.y = -85.1799999999997;
+				object.position.z = -0.8000000000000016;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e42';
+				object.position.x = -9.967798006864497;
+				object.position.y = -88.27999999999952;
+				object.position.z = 0.9999999999999983;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e43';
+				object.position.x = -8.8677980068645;
+				object.position.y = -90.97999999999936;
+				object.position.z = 6.099999999999993;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e44';
+				object.position.x = -9.467798006864498;
+				object.position.y = -91.87999999999931;
+				object.position.z = 7.799999999999988;
+				scene.add( object );
+
+				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x006aff } ) );
+				object.name = 'e45';
+				object.position.x = -9.967798006864497;
+				object.position.y = -93.17999999999924;
+				object.position.z = 11.299999999999976;
+				scene.add( object );
+
+				/* FIM MERIDIANO Estômago (Wei) - Zu Yang Ming Wei Jing */
+				var manager = new THREE.LoadingManager();
+				manager.onProgress = function ( item, loaded, total ) {
+
+					console.log( item, loaded, total );
+					/* Escreve no console do browser o andamento do carregamento */
+
+				};
+				/* Gerenciador de carregamento vide https://threejs.org/docs/#Reference/Loaders/LoadingManager */
+
+				var texture = new THREE.Texture();
+
+				var onProgress = function ( xhr ) {
+					if ( xhr.lengthComputable ) {
+						var percentComplete = xhr.loaded / xhr.total * 100;
+						console.log( Math.round(percentComplete, 2) + '% downloaded' );
+					}
+				};
+				/* essa função serve para retornar a quantidade em porcentagem de quanto já carregou e quanto falta carregar do OBJETO (corpo humano). */
+
+				var onError = function ( xhr ) {
+				};
+
+				var loader = new THREE.ImageLoader( manager );
+				loader.load( 'three/textura/UV_Grid_Sm.jpg', function ( image ) {
+
+					texture.image = image;
+					texture.needsUpdate = true;
+
+				} );
+				/* Carrega a textura vide https://threejs.org/docs/#Reference/Loaders/ImageLoader */
+
+				var loader = new THREE.OBJLoader( manager );
+				/* instancia o carregador de objeto vide https://threejs.org/docs/#Reference/Loaders/OBJLoader */
+				var material = new THREE.MeshBasicMaterial({color: 'yellow', side: THREE.DoubleSide});
+				/* aplica a cor ao objeto - só aparece sem a textura */
+				loader.load( 'three/modelo/corpo.obj', function ( object ) {
+
+					object.traverse( function ( child ) {
+
+						if ( child instanceof THREE.Mesh ) {
+
+							child.material.map = texture;
+
+						}
+
+					} );
+
+					object.position.y = - 95;
+					scene.add( object );
+
+				}, onProgress, onError );
+				/* carrega o objeto corpo.obj e aplica a textura */
+				raycaster = new THREE.Raycaster();
+				/* declara a variavel raycaster, que é instanciada pelo construtor Raycaster(), usado para clicar em objetos tridimensionais - funciona como um raio projetado ao longo do eixo Z, (o mouse trabalha em 2 dimensoes), o raycaster faz um procedimento que quando o mouse é clicado, vai verificando-se ao longo da reta Z com os eixos X e Y fixados pela POSIÇÃO do mouse. Quando um objeto é encontrado, ele é adicionado à um vetor de INTERSECÇÕES. Podendo assim acessá-lo e verificar quais objetos estão no caminho. */
+				renderer = new THREE.WebGLRenderer();
+				/* O renderizador WebGL exibe a cena trabalhada usando o WebGL, se o dispositivo suportar.*/
+
+				renderer.setPixelRatio( window.devicePixelRatio );
+				/* Define a proporção de pixel do dispositivo em questão, passando como parâmetro esta informação, obtida pelo comando window.devicePixelRatio. Geralmente usado para dispositivos HiDPI, a fim de evitar sobreposição de imagens no CANVAS*/
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				/* Define o tamanho da tela de renderização - neste caso o tamanho de ALTURA e LARGURA da janela (total)*/
+				container.appendChild( renderer.domElement );
+				/* Insere o elemento CANVAS no container, onde será renderizado o WebGL
+				   A variável container foi declarada na linha 91 */
+
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+				/*Declara uma escuta para eventos de click do mouse. Cada vez que o mouse é clicado, a função onDocumentMouseDown é chamada.*/
+				window.addEventListener( 'resize', onWindowResize, false );
+			}
+
+			function onWindowResize() {
+
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function onDocumentMouseMove( event ) {
+
+				event.preventDefault();
+
+				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+				mouseX = ( event.clientX - windowHalfX ) / 2;
+				mouseY = ( event.clientY - windowHalfY ) / 2;
+
+			}
+
+			function onDocumentMouseDown( event ) {
+
+				event.preventDefault();
+				/* Faz cancelar qualquer ação padrão a ser executado durante o click do mouse. Prevenir uma ação inesperada, para tratar corretamente o clique do mouse */
+
+				raycaster.setFromCamera( mouse, camera );
+				/* Atualiza as informações FromCamera do raycaster onde
+				mouse: coordenadas 2D do mouse.
+				camera: camera pela qual o raio tem origem*/
+
+				var intersects = raycaster.intersectObjects( scene.children );
+				/*
+					Executa o método que registra em um vetor os objetos encontrados ao longo do raio. Onde:
+					scene.children: todos os objetos que serão verificados pelo raio. Neste caso, usa-se scene.children para incluir TODOS os objetos (filhos da cena).
+				*/
+				console.log(intersects);
+				if ( intersects.length > 0 ) {
+					/* intersects.lenght retorna a quantidade de elementos. Se a quantidade de elementos for > 0 faça: */
+
+					if ( INTERSECTED != intersects[ 0 ].object ) {
+						/* se o objeto não for na primeira posição (pois este é o corpo humano e ele sempre vai estar lá)
+						FAÇA
+						*/
+						INTERSECTED = intersects[ 0 ].object;
+						/* armazena na variavel INTERSECTED o objeto encontrado*/
+    					mer = INTERSECTED.name.replace(/[0-9]+/,"");
+    					meridiano = parent.document.getElementById(mer);
+						animacao = parent.document.getElementById(INTERSECTED.name);
+						/* recupera e armazena em animacao o elemento com o ID do nome da esfera*/
+						console.log();
+						meridiano.click();
+						animacao.click();
+						/*clica-se involuntariamente no objeto com o ID igual ao do NOME da esfera, fazendo abrir na pagina pai o botão relacionado com a esfera clicada */
+					}
+				} else {
+					/* caso contrário */
+					/*  atualiza a esfera para a cor padrão, visto que o clique foi em outra coisa que não foi a última esfera clicada */
+
+					INTERSECTED = null;
+
+				}
+				console.log(camera.position.x, camera.position.y, camera.position.z);
+				//console.log(teste);
+			}
+
+			function acuPonto(pto) {
+			/* declaração da função acuPonto, que recebe apenas as 3 coordenadas onde a câmera irá se aproximar */
+				if (obj_aux != null) {
+					obj_aux.material.emissive.setHex( obj_aux.currentHex );
+					/* pelo método setHex alteramos a cor da esfera para o padrão, que está armazenado no atributo .currentHex */
+				}
+				/* obj_aux é uma variavel auxiliar para armazenar o ultimo objeto clicado, para então fazer a restauração da cor normal da esfera */
+				obj = scene.getObjectByName(pto);
+				/* chamada do método que faz a busca pelo nome do objeto tridimensional, armazenando-o na variavel obj */
+				obj.currentHex = obj.material.emissive.getHex();
+				/* chamada do método que retorna o valor em RGB da cor do objeto, armazenando-a em um novo atributo criado na esfera: .currentHex */
+				obj.material.emissive.setHex( 0xff0000 );
+				/* alteração da cor da esfera para vermelho pelo método setHex */
+				obj_aux = obj;
+				/* armazena na variável global obj_aux para podermos acessá-la e restaurar a cor normal quando uma nova esfera é clicada.*/
+
+				acuX = obj.position.x
+				acuY = obj.position.y;
+				acuZ = obj.position.z;
+				/* atribuímos os valores de X,Y,Z do objeto nas variáveis globais acuX,acuY,acuZ para uso em focoCamera */
+
+				if (obj.view == null) acuZF = 45;
+				/* se não existir um atributo do objeto chamado VIEW, por padrão a variável de folga neste caso será no eixo Z (para a camera ficar afastada do ponto em 45 pixeis - frontal) */
+				else if (obj.view == 1) acuXF = 45;
+				/* se existir o atributo do objeto chamado VIEW com o valor 1, é um ponto lateral direito, portanto alteramos a variavel de folga no eixo X (para a camera ficar afastada do ponto em 45 pixeis - lateral) */
+				else if (obj.view == -1) acuXF = -45;
+				/* se existir o atributo do objeto chamado VIEW com o valor -1, é um ponto lateral esquerdo, portanto alteramos a variavel de folga no eixo X (para a camera ficar afastada do ponto em -45 pixeis - lateral) */
+				else if (obj.view == -2) acuZF = -45;
+				/* se existir o atributo do objeto chamado VIEW com o valor -2, é um ponto traseiro, portanto alteramos a variavel de folga no eixo Z (para a camera ficar afastada do ponto em -45 pixeis - parte de trás) */
+				
+				p.set( acuX, acuY, acuZ );
+				/* p é um vetor tridimensional declarado na linha 41
+				aqui estamos alterando os valores de sua coordenada, para os valores recebidos pela função */
+
+				focoCamera = true;
+				/* aqui definimos a variavel global focoCamera para TRUE, ela fora declarada como FALSE na linha 39 */
+			}
+
+			function animate() {
+				/* pequena função com duas instruções, mas responsável por animar a câmera chamando-a recursivamente */
+				requestAnimationFrame( animate );
+				/* função nativa do javascript, introduzida recentemente. Sanou varios problemas que persistiam quando utilizávamos setInterval(), deixando todo o gerenciamento de tempo e hardware para o navegador. Seria interessante falar sobre isso,
+				mas basicamente com este comando podemos realizar uma animação por X frames por segundo, passando uma função que será re-executada infinitas vezes - neste caso a função animate está sendo chamada recursivamente. */
+				render();
+				/* chama a função render agora com os valores atualizados pela mesma função render, criando uma espécie de animação frame a frame*/
+			}
+
+			function render() {
+				/* função responsável por renderizar a cena
+				ATENÇÃO: NESTA FUNÇÃO acuXF, acuYF, acuYZ são as variáveis de FOLGA para afastamento da camera nos pontos do tipo - frontal, traseiro, lateral direito e esquerdo. Os seus valores são definidos na função acuPonto();.
+					Se um ponto é frontal fica (acuZF = 45; acuYF = 0; acuXF = 0)
+					Se um ponto é traseiro fica (acuZF = -45; acuYF = 0; acuXF = 0)
+					Se um ponto é lateral direito fica (acuZF = 0; acuYF = 0; acuXF = 45)
+					Se um ponto é lateral esquerdo fica (acuZF = 0; acuYF = 0; acuXF = -45)
+				*/
+				renderer.render( scene, camera );
+				/* renderiza uma cena utilizando uma câmera, neste caso, scene e camera */
+				if (focoCamera) { // SE (focoCamera == TRUE) faça
+					/* variável global que é definida como TRUE quando é clicado em uma esfera ou clicada em um botão referente à um acuponto na barra lateral
+					Basicamente, é a estrutura de condição que faz acontecer a animação da câmera
+					*/
+					if (camera.position.x != acuX+acuXF) { /* Se a posição da câmera no eixo x for diferente do ponto que queremos chegar FAÇA */
+						if (camera.position.x > acuX+acuXF) { // se a posição da camera em X for maior que o valor de X que queremos chegar
+							camera.position.x--; // Incrementa 1 unidade o valor da posição da camera.x
+						} else { // caso contrário
+							camera.position.x++; // Decrementa 1 unidade o valor da posição da camera.x
+						}
+						if (Math.round(camera.position.x) == Math.round(acuX+acuXF)) { // Se o valor INTEIRO da posição da camera.x for IGUAL ao valor INTEIRO da posição do ponto pretendido
+							camera.position.x = acuX+acuXF;
+							//a posição da camera em x recebe o valor exato do acuponto em x.
+						}
+					}
+
+
+					if (camera.position.y != acuY) {
+						/* Se a posição da câmera no eixo y for diferente do ponto que queremos chegar FAÇA */
+						if (camera.position.y > acuY) { // se a posição da camera em Y for maior que o valor de Y do acuponto que queremos chegar
+							camera.position.y--; // Decrementa 1 unidade o valor da posição da camera.y
+						} else {
+							camera.position.y++; // Incrementa 1 unidade o valor da posição da camera.y
+						}
+						
+						if (Math.round(camera.position.y) == Math.round(acuY)) { // Se o valor INTEIRO da posição da camera.x for IGUAL ao valor INTEIRO da posição do ponto pretendido
+							camera.position.y = acuY;
+							//a posição da camera em y recebe o valor exato do acuponto em y.
+						}
+					}
+
+					if (camera.position.z != acuZ+acuZF) {
+						/* Se a posição da câmera no eixo z for diferente do acuponto na posição Z+45 (+45 pois a camera do eixo Z deve ficar um pouco afastada e não grudada no ponto) que queremos chegar FAÇA */
+						if (camera.position.z > acuZ+acuZF) { // se a posição da camera em Z for maior que o valor de Z+45 do acuponto que queremos chegar
+							camera.position.z--; // Decrementa 1 unidade o valor da posição da camera.z
+						} else {
+							camera.position.z++; // Incrementa 1 unidade o valor da posição da camera.z
+						}
+						if (Math.round(camera.position.z) == Math.round(acuZ+acuZF)) { // Se o valor INTEIRO da posição da camera.z for IGUAL ao valor INTEIRO da posição z+45 do ponto pretendido
+							camera.position.z = acuZ+acuZF;
+							//a posição da camera em z recebe o valor exato do acuponto em z.
+						}
+					}
+					if ((camera.position.z == acuZ+acuZF)&&(camera.position.y == acuY)&&(camera.position.x == acuX+acuXF)) {
+						acuZF = 0;
+						acuYF = 0;
+						acuXF = 0;
+						focoCamera = false;
+						controls.target = p;
+						return;
+					} /* se todas as condições estiverem satisfeitas, que é a camera exatamente no acuponto selecionado (exceto em z, que é z+45 para a camera nao ficar grudada no ponto), então alteramos a variável global focoCamera para FALSE, portanto quando entrar na função render novamente será verificada esta variável, e como ela estará FALSE não entrará nessas condições para animação. A única forma de focoCamera tornar-se TRUE será quando for clicado em um acuponto ou em um botão na barra lateral */
+					camera.lookAt( p );
+					/* lookAt( p ) => Em p está armazenada a coordenada do ponto em questão (onde a camera deverá se aproximar), portanto invocamos o metodo da camera -> lookAt(p) que recebe como parâmetro um ponto do tipo vetor tridimensional (neste caso, p) para que a câmera fique "olhando" para o ponto enquanto ela se aproxima (torna a animação mais agradavel, fica focada no ponto)*/
+				}
+			}
+
+		</script>
+	</body>
+</html>
