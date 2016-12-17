@@ -9,3 +9,11 @@ Thus, this work consists of the construction of a application built with WebGl a
 The program can be executed using the browsers Mozilla Firefox and Google Chrome. As the algorithm developed has linear complexity, even has a low computational cost and, by compressing of images, we make the program acceptable for a web application.
 
 WebGl is supported by Google Chrome 46, Mozilla Firefox 42, Apple Safari 9.0,	MS Internet Explorer 11 and	MS Edge 13.
+
+#
+
+The file that must be initialized, containing the sidebar with the point information, is the 'acumaster.html'
+
+The main code is in 'acu.html' and it's all commented
+
+'Acu_pos' is an independent file used to obtain the positions of an acupuncture point that can be moved by pressing the arrows and plus & minus
